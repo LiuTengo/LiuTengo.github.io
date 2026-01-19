@@ -1,0 +1,317 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>OpenGL-02-VAO&amp;VBO&amp;IBO | Derek's Blog</title><meta name="author" content="Dingxin Liu"><meta name="copyright" content="Dingxin Liu"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="VBO， Vertex Buffer Object 顶点缓冲对象 VBO的作用 在GPU内存中存储大量顶点的对象。避免多次从CPU传递数据到GPU从而影响性能。 使用VBO 创建VBO 创建一个缓冲对象。使用glGenBuffers函数生成一个带有缓冲ID的VBO对象 1234unsigned int VBO;&#x2F;&#x2F;Buffer的IDglGenBuffers(1,&amp;VBO);&#x2F;&#x2F;函数原型：v">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenGL-02-VAO&amp;VBO&amp;IBO">
+<meta property="og:url" content="https://hexo.derekliu.cc/2025/02/13/OpenGL/OpenGL-02-VAO-VBO-IBO/index.html">
+<meta property="og:site_name" content="Derek&#39;s Blog">
+<meta property="og:description" content="VBO， Vertex Buffer Object 顶点缓冲对象 VBO的作用 在GPU内存中存储大量顶点的对象。避免多次从CPU传递数据到GPU从而影响性能。 使用VBO 创建VBO 创建一个缓冲对象。使用glGenBuffers函数生成一个带有缓冲ID的VBO对象 1234unsigned int VBO;&#x2F;&#x2F;Buffer的IDglGenBuffers(1,&amp;VBO);&#x2F;&#x2F;函数原型：v">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/02/12/OKnx8JHqN92tWcb.jpg">
+<meta property="article:published_time" content="2025-02-13T01:30:13.000Z">
+<meta property="article:modified_time" content="2025-03-31T06:45:44.301Z">
+<meta property="article:author" content="Dingxin Liu">
+<meta property="article:tag" content="计算机图形学">
+<meta property="article:tag" content="OpenGL">
+<meta property="article:tag" content="渲染引擎">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2025/02/12/OKnx8JHqN92tWcb.jpg"><link rel="shortcut icon" href="/img/avatar.jpg"><link rel="canonical" href="https://hexo.derekliu.cc/2025/02/13/OpenGL/OpenGL-02-VAO-VBO-IBO/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'OpenGL-02-VAO&VBO&IBO',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-03-31 14:45:44'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+document.addEventListener('pjax:send', () => {
+  Pace.restart()
+})
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">32</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">25</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页 Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 记录 Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签 Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类 Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://liutengo.github.io/file/中国传媒大学刘鼎新简历.pdf"><i class="fa-fw far fa-file-pdf"></i><span> 简历 Resume</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://s2.loli.net/2025/02/12/OKnx8JHqN92tWcb.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Derek's Blog"><span class="site-name">Derek's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页 Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 记录 Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签 Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类 Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://liutengo.github.io/file/中国传媒大学刘鼎新简历.pdf"><i class="fa-fw far fa-file-pdf"></i><span> 简历 Resume</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">OpenGL-02-VAO&amp;VBO&amp;IBO</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-02-13T01:30:13.000Z" title="发表于 2025-02-13 09:30:13">2025-02-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-31T06:45:44.301Z" title="更新于 2025-03-31 14:45:44">2025-03-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/OpenGL/">OpenGL</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="OpenGL-02-VAO&amp;VBO&amp;IBO"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1>VBO， Vertex Buffer Object 顶点缓冲对象</h1>
+<h2 id="VBO的作用">VBO的作用</h2>
+<p>在GPU内存中<strong>存储大量顶点</strong>的对象。避免多次从CPU传递数据到GPU从而影响性能。</p>
+<h2 id="使用VBO">使用VBO</h2>
+<h3 id="创建VBO">创建VBO</h3>
+<p>创建一个缓冲对象。使用glGenBuffers函数生成一个带有缓冲ID的VBO对象</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">int</span> VBO;<span class="comment">//Buffer的ID</span></span><br><span class="line"><span class="built_in">glGenBuffers</span>(<span class="number">1</span>,&amp;VBO);<span class="comment">//函数原型：void glGenBuffers(GLsizei n,GLuint * buffers);</span></span><br><span class="line"><span class="comment">//GLsizei n —— 声明的缓冲区数量</span></span><br><span class="line"><span class="comment">//GLuint buffer —— 缓冲区ID的指针</span></span><br></pre></td></tr></table></figure>
+<h3 id="绑定VBO">绑定VBO</h3>
+<p>用于确定缓冲区的类型。可以同时绑定多个缓冲，只要它们是不同的缓冲类型。使用glBindBuffer函数把新创建的缓冲绑定到GL_ARRAY_BUFFER目标上。<br>
+<strong>从这一刻起，我们使用的任何（在GL_ARRAY_BUFFER目标上的）缓冲调用都会用来配置当前绑定的缓冲(VBO)。</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">glBindBuffer</span>(GL_ARRAY_BUFFER, VBO);</span><br><span class="line"><span class="comment">//函数原型：void glBindBuffer(GLenum target,GLuint buffer);</span></span><br><span class="line"><span class="comment">// GLenum target —— 缓冲区类型</span></span><br><span class="line"><span class="comment">// GLuint buffer —— 缓冲区ID</span></span><br></pre></td></tr></table></figure>
+<p>缓冲区类型有：</p>
+<ul>
+<li>GL_ARRAY_BUFFER VBO顶点缓冲区对象</li>
+<li>GL_ELEMENT_ARRAY_BUFFER IBO索引缓冲区对象</li>
+<li>GL_TEXTURE_BUFFER 图片缓冲对象</li>
+<li>GL_UNIFORM_BUFFER uniform缓冲区对象</li>
+<li>GL_TRANSFORM_FEEDBACK_BUFFER 变换反馈缓冲区对象</li>
+<li>GL_PIXEL_PACK_BUFFER和GL_PIXEL_UNPACK_BUFFER 像素缓冲区对象</li>
+<li>GL_COPY_READ_BUFFER和GL_COPY_WRITE_BUFFER 复制缓冲区</li>
+<li>GL_DRAW_INDIRECT_BUFFER</li>
+</ul>
+<h3 id="向VBO中填充数据">向VBO中填充数据</h3>
+<p>glBufferData是一个专门用来把用户定义的数据复制到当前绑定缓冲的函数。它的<strong>第一个参数是目标缓冲的类型</strong>：顶点缓冲对象当前绑定到GL_ARRAY_BUFFER目标上。<strong>第二个参数指定传输数据的大小</strong>(以字节为单位)；用一个简单的sizeof计算出顶点数据大小就行。<strong>第三个参数是我们希望发送的实际数据</strong>。第四个参数指定了显卡绘制指定数据的方式。有三种形式：</p>
+<ul>
+<li>GL_STATIC_DRAW ：数据不会或几乎不会改变。</li>
+<li>GL_DYNAMIC_DRAW：数据会被改变很多。</li>
+<li>GL_STREAM_DRAW ：数据每次绘制时都会改变。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> vertices[] = &#123;</span><br><span class="line">    <span class="number">-0.5f</span>, <span class="number">-0.5f</span>, <span class="number">0.0f</span>,</span><br><span class="line">     <span class="number">0.5f</span>, <span class="number">-0.5f</span>, <span class="number">0.0f</span>,</span><br><span class="line">     <span class="number">0.0f</span>,  <span class="number">0.5f</span>, <span class="number">0.0f</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">glBufferData</span>(GL_ARRAY_BUFFER, <span class="built_in">sizeof</span>(vertices), vertices, GL_STATIC_DRAW);</span><br></pre></td></tr></table></figure>
+<h1>VAO， Vertex Array Object 顶点数组对象</h1>
+<h2 id="VAO的作用">VAO的作用</h2>
+<p>顶点（Vertex）可以包含多种数据，包括但不限于顶点位置、法线、切线、顶点颜色、uv坐标等等。</p>
+<p>VAO用于<strong>链接顶点属性，指明VBO中哪一个部分对应顶点着色器的顶点属性</strong>。</p>
+<p>如下图，VAO2中第一个AttributePointer0指向了VBO2中的顶点位置，第二个AttributePointer1指向了VBO2中的顶点颜色。AttributePointer通过数据的Stride（数据步长）访问下一个元素。<br>
+<img src="https://s2.loli.net/2025/02/13/OYhn7FLbR1NgAkj.png" alt="VAO与VBO的关系.png"></p>
+<h2 id="使用VAO">使用VAO</h2>
+<h3 id="理解链接顶点属性">理解链接顶点属性</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">glVertexAttribPointer</span>(<span class="number">0</span>,<span class="number">3</span>,GL_FLOAT,GL_FALSE,<span class="number">3</span>*<span class="built_in">sizeof</span>(<span class="type">float</span>),(<span class="type">void</span>*)<span class="number">0</span>);</span><br><span class="line"><span class="built_in">glEnableVertexAttribArray</span>(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>glVertexAttribPointer</strong><br>
+glVertexAttribPointer函数的参数：</li>
+</ul>
+<p>第一个参数指定我们要配置的顶点属性。还记得我们在顶点着色器中使用layout(location = 0)定义了position顶点属性的位置值(Location)吗？它可以把顶点属性的位置值设置为0。因为我们希望把数据传递到这一个顶点属性中，所以这里我们传入0。</p>
+<p>第二个参数指定顶点属性的大小。顶点属性是一个vec3，它由3个值组成，所以大小是3。</p>
+<p>第三个参数指定数据的类型，这里是GL_FLOAT(GLSL中vec*都是由浮点数值组成的)。</p>
+<p>下个参数定义我们是否希望数据被标准化(Normalize)。如果我们设置为GL_TRUE，所有数据都会被映射到0（对于有符号型signed数据是-1）到1之间。我们把它设置为GL_FALSE。</p>
+<p>第五个参数叫做步长(Stride)，它告诉我们在连续的顶点属性组之间的间隔。由于下个组位置数据在3个float之后，我们把步长设置为3 * sizeof(float)。要注意的是由于我们知道这个数组是紧密排列的（在两个顶点属性之间没有空隙）我们也可以设置为0来让OpenGL决定具体步长是多少（只有当数值是紧密排列时才可用）。一旦我们有更多的顶点属性，我们就必须更小心地定义每个顶点属性之间的间隔，我们在后面会看到更多的例子（译注: 这个参数的意思简单说就是从这个属性第二次出现的地方到整个数组0位置之间有多少字节）。</p>
+<p>最后一个参数的类型是void*，所以需要我们进行这个奇怪的强制类型转换。它表示位置数据在缓冲中起始位置的偏移量(Offset)。由于位置数据在数组的开头，所以这里是0。我们会在后面详细解释这个参数。</p>
+<p>至于具体获取哪一个VBO的数据则<strong>由在调用glVertexAttribPointer时绑定到GL_ARRAY_BUFFER的VBO决定的</strong></p>
+<ul>
+<li><strong>glEnableVertexAttribArray</strong><br>
+唯一一个参数index，指定了要启用的顶点属性的索引。需要和顶点着色器配合使用。<br>
+比如：<br>
+在OpenGL代码中将颜色属性的index设为0，位置属性的index设为1。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">GLuint vbo, vao;</span><br><span class="line"><span class="built_in">glGenBuffers</span>(<span class="number">1</span>, &amp;vbo);</span><br><span class="line"><span class="built_in">glGenVertexArrays</span>(<span class="number">1</span>, &amp;vao);</span><br><span class="line"></span><br><span class="line"><span class="built_in">glBindVertexArray</span>(vao);</span><br><span class="line"><span class="built_in">glBindBuffer</span>(GL_ARRAY_BUFFER, vbo);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 假设数据中位置和颜色已经存储</span></span><br><span class="line"><span class="built_in">glVertexAttribPointer</span>(<span class="number">0</span>, <span class="number">3</span>, GL_FLOAT, GL_FALSE, <span class="built_in">sizeof</span>(Vertex), (<span class="type">void</span>*)<span class="number">0</span>);  <span class="comment">// 为颜色属性设置格式</span></span><br><span class="line"><span class="built_in">glEnableVertexAttribArray</span>(<span class="number">0</span>);  <span class="comment">// 启用颜色属性</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">glVertexAttribPointer</span>(<span class="number">1</span>, <span class="number">3</span>, GL_FLOAT, GL_FALSE, <span class="built_in">sizeof</span>(Vertex), (<span class="type">void</span>*)<span class="built_in">offsetof</span>(Vertex, position)); <span class="comment">// 设置位置属性格式</span></span><br><span class="line"><span class="built_in">glEnableVertexAttribArray</span>(<span class="number">1</span>);  <span class="comment">// 启用位置属性</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">glBindBuffer</span>(GL_ARRAY_BUFFER, <span class="number">0</span>);  <span class="comment">// 解绑</span></span><br><span class="line"><span class="built_in">glBindVertexArray</span>(<span class="number">0</span>);  <span class="comment">// 解绑</span></span><br></pre></td></tr></table></figure>
+<p>那么在对应的VS中，需要这样写：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#version 330 core</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">location</span> = <span class="number">0</span>) <span class="keyword">in</span> <span class="type">vec3</span> color;    <span class="comment">// 颜色（使用 location 0）</span></span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">location</span> = <span class="number">1</span>) <span class="keyword">in</span> <span class="type">vec3</span> position; <span class="comment">// 位置</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">out</span> <span class="type">vec3</span> fragColor;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">    <span class="built_in">gl_Position</span> = <span class="type">vec4</span>(position, <span class="number">1.0</span>);</span><br><span class="line">    fragColor = color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="创建VAO">创建VAO</h3>
+<p>通常一个模型有多个属性，逐个连接就难以管理了，这时候就需要使用VAO了。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">int</span> VAO; <span class="comment">//类似VBO的创建</span></span><br><span class="line"><span class="built_in">glGenVertexArrays</span>(<span class="number">1</span>, &amp;VAO); <span class="comment">//参数：数量、ID</span></span><br></pre></td></tr></table></figure>
+<h3 id="绑定VAO">绑定VAO</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ..:: 初始化代码（只运行一次 (除非你的物体频繁改变)） :: ..</span></span><br><span class="line"><span class="comment">// 1. 绑定VAO</span></span><br><span class="line"><span class="built_in">glBindVertexArray</span>(VAO);</span><br><span class="line"><span class="comment">// 2. 把顶点数组复制到缓冲中供OpenGL使用</span></span><br><span class="line"><span class="built_in">glBindBuffer</span>(GL_ARRAY_BUFFER, VBO);</span><br><span class="line"><span class="built_in">glBufferData</span>(GL_ARRAY_BUFFER, <span class="built_in">sizeof</span>(vertices), vertices, GL_STATIC_DRAW);</span><br><span class="line"><span class="comment">// 3. 设置顶点属性指针</span></span><br><span class="line"><span class="built_in">glVertexAttribPointer</span>(<span class="number">0</span>, <span class="number">3</span>, GL_FLOAT, GL_FALSE, <span class="number">3</span> * <span class="built_in">sizeof</span>(<span class="type">float</span>), (<span class="type">void</span>*)<span class="number">0</span>);</span><br><span class="line"><span class="built_in">glEnableVertexAttribArray</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);</span></span><br><span class="line"><span class="comment">//glEnableVertexAttribArray(1);</span></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="comment">// 解绑VAO，之后使用时再绑定相应的VAO</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ..:: 绘制代码（渲染循环中） :: ..</span></span><br><span class="line"><span class="comment">// 4. 绘制物体</span></span><br><span class="line"><span class="built_in">glUseProgram</span>(shaderProgram);</span><br><span class="line"><span class="built_in">glBindVertexArray</span>(VAO);</span><br><span class="line"><span class="built_in">someOpenGLFunctionThatDrawsOurTriangle</span>();</span><br></pre></td></tr></table></figure>
+<h1>IBO， Index Buffer Object 索引缓冲对象（EBO， Element Buffer Object， 元素缓冲对象）</h1>
+<h2 id="IBO的作用">IBO的作用</h2>
+<p>用于指示哪些顶点会组成图元。从而减少VBO传输的数据大小。</p>
+<h2 id="IBO的使用">IBO的使用</h2>
+<h3 id="创建IBO">创建IBO</h3>
+<p>同VBO的创建</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">int</span> EBO;</span><br><span class="line"><span class="built_in">glGenBuffers</span>(<span class="number">1</span>, &amp;EBO);</span><br></pre></td></tr></table></figure>
+<h3 id="绑定IBO">绑定IBO</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> vertices[] = &#123;</span><br><span class="line">    <span class="number">0.5f</span>, <span class="number">0.5f</span>, <span class="number">0.0f</span>,   <span class="comment">// 右上角</span></span><br><span class="line">    <span class="number">0.5f</span>, <span class="number">-0.5f</span>, <span class="number">0.0f</span>,  <span class="comment">// 右下角</span></span><br><span class="line">    <span class="number">-0.5f</span>, <span class="number">-0.5f</span>, <span class="number">0.0f</span>, <span class="comment">// 左下角</span></span><br><span class="line">    <span class="number">-0.5f</span>, <span class="number">0.5f</span>, <span class="number">0.0f</span>   <span class="comment">// 左上角</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">unsigned</span> <span class="type">int</span> indices[] = &#123;</span><br><span class="line">    <span class="comment">// 注意索引从0开始! </span></span><br><span class="line">    <span class="comment">// 此例的索引(0,1,2,3)就是顶点数组vertices的下标，</span></span><br><span class="line">    <span class="comment">// 这样可以由下标代表顶点组合成矩形</span></span><br><span class="line"></span><br><span class="line">    <span class="number">0</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="comment">// 第一个三角形</span></span><br><span class="line">    <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>  <span class="comment">// 第二个三角形</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">glBindBuffer</span>(GL_ELEMENT_ARRAY_BUFFER, EBO); <span class="comment">//注意target类型是GL_ELEMENT_ARRAY_BUFFER</span></span><br><span class="line"><span class="built_in">glBufferData</span>(GL_ELEMENT_ARRAY_BUFFER, <span class="built_in">sizeof</span>(indices), indices, GL_STATIC_DRAW);</span><br></pre></td></tr></table></figure>
+<p>这样，在绘制时调用下面的函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">glBindBuffer</span>(GL_ELEMENT_ARRAY_BUFFER, EBO);</span><br><span class="line"><span class="built_in">glDrawElements</span>(GL_TRIANGLES, <span class="number">6</span>, GL_UNSIGNED_INT, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>glDrawElements</strong><br>
+第一个参数指定了我们绘制的模式，这个和glDrawArrays的一样。<br>
+第二个参数是我们打算绘制顶点的个数，这里填6，也就是说我们一共需要绘制6个顶点。<br>
+第三个参数是索引的类型，这里是GL_UNSIGNED_INT。最后一个参数里我们可以指定EBO中的偏移量（或者传递一个索引数组，但是这是当你不在使用索引缓冲对象的时候），但是我们会在这里填写0。</li>
+</ul>
+<h3 id="将IBO绑定到VAO">将IBO绑定到VAO</h3>
+<p>为了更方便的切换绘制对象，可以将IBO绑定到VAO的最后一位。<br>
+(<strong>注：在解绑VAO时要注意不要先解绑IBO，否则会导致IBO丢失</strong>)<br>
+现在VBO、VAO和IBO的关系应该如下图：</p>
+<p>代码部分如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ..:: 初始化代码 :: ..</span></span><br><span class="line"><span class="comment">// 1. 绑定顶点数组对象</span></span><br><span class="line"><span class="built_in">glBindVertexArray</span>(VAO);</span><br><span class="line"><span class="comment">// 2. 把我们的顶点数组复制到一个顶点缓冲中，供OpenGL使用</span></span><br><span class="line"><span class="built_in">glBindBuffer</span>(GL_ARRAY_BUFFER, VBO);</span><br><span class="line"><span class="built_in">glBufferData</span>(GL_ARRAY_BUFFER, <span class="built_in">sizeof</span>(vertices), vertices, GL_STATIC_DRAW);</span><br><span class="line"><span class="comment">// 3. 复制我们的索引数组到一个索引缓冲中，供OpenGL使用</span></span><br><span class="line"><span class="built_in">glBindBuffer</span>(GL_ELEMENT_ARRAY_BUFFER, EBO);</span><br><span class="line"><span class="built_in">glBufferData</span>(GL_ELEMENT_ARRAY_BUFFER, <span class="built_in">sizeof</span>(indices), indices, GL_STATIC_DRAW);</span><br><span class="line"><span class="comment">// 4. 设定顶点属性指针</span></span><br><span class="line"><span class="built_in">glVertexAttribPointer</span>(<span class="number">0</span>, <span class="number">3</span>, GL_FLOAT, GL_FALSE, <span class="number">3</span> * <span class="built_in">sizeof</span>(<span class="type">float</span>), (<span class="type">void</span>*)<span class="number">0</span>);</span><br><span class="line"><span class="built_in">glEnableVertexAttribArray</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// ..:: 绘制代码（渲染循环中） :: ..</span></span><br><span class="line"><span class="built_in">glUseProgram</span>(shaderProgram);</span><br><span class="line"><span class="built_in">glBindVertexArray</span>(VAO);</span><br><span class="line"><span class="built_in">glDrawElements</span>(GL_TRIANGLES, <span class="number">6</span>, GL_UNSIGNED_INT, <span class="number">0</span>);</span><br><span class="line"><span class="built_in">glBindVertexArray</span>(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<h1>测试</h1>
+<p>学习完了来实践一下，我们来画一个彩色的矩形。<br>
+以下是矩形类：</p>
+<ul>
+<li>头文件</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;glad/glad.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;GLFW/glfw3.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TestRect</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> region ModelData</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> VBO;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> IBO;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> VAO;</span><br><span class="line">	</span><br><span class="line">	<span class="type">const</span> <span class="type">unsigned</span> <span class="type">int</span> indices[<span class="number">6</span>] = &#123;</span><br><span class="line">		<span class="number">0</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="comment">// 第一个三角形</span></span><br><span class="line">		<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>  <span class="comment">// 第二个三角形</span></span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="type">const</span> <span class="type">float</span> vertices[<span class="number">24</span>] = &#123;</span><br><span class="line">			<span class="number">0.5f</span>,   <span class="number">0.5f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>,<span class="number">0.0f</span>,<span class="number">0.0f</span>,   <span class="comment">// 右上角</span></span><br><span class="line">			<span class="number">0.5f</span>,  <span class="number">-0.5f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>,<span class="number">1.0f</span>,<span class="number">0.0f</span>,  <span class="comment">// 右下角</span></span><br><span class="line">			<span class="number">-0.5f</span>, <span class="number">-0.5f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>,<span class="number">0.0f</span>,<span class="number">1.0f</span>,<span class="comment">// 左下角</span></span><br><span class="line">			<span class="number">-0.5f</span>,  <span class="number">0.5f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>,<span class="number">1.0f</span>,<span class="number">1.0f</span> <span class="comment">// 左上角</span></span><br><span class="line">	&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> endregion </span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> region Material&amp;Shader</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> shaderProgram;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span>* vertexShaderSource = <span class="string">&quot;#version 330 core\n&quot;</span></span><br><span class="line">		<span class="string">&quot;layout (location = 0) in vec3 aPos;\n&quot;</span></span><br><span class="line">		<span class="string">&quot;layout (location = 1) in vec3 aCol;\n&quot;</span></span><br><span class="line">		<span class="string">&quot;out vec3 fragColor;\n&quot;</span></span><br><span class="line">		<span class="string">&quot;void main()\n&quot;</span></span><br><span class="line">		<span class="string">&quot;&#123;\n&quot;</span></span><br><span class="line">		<span class="string">&quot;   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n&quot;</span></span><br><span class="line">		<span class="string">&quot;   fragColor = aCol;&quot;</span></span><br><span class="line">		<span class="string">&quot;&#125;\0&quot;</span>;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span>* fragmentShaderSource = <span class="string">&quot;#version 330 core\n&quot;</span></span><br><span class="line">		<span class="string">&quot;out vec4 FragColor;\n&quot;</span></span><br><span class="line">		<span class="string">&quot;in vec3 fragColor;\n&quot;</span></span><br><span class="line">		<span class="string">&quot;void main()\n&quot;</span></span><br><span class="line">		<span class="string">&quot;&#123;\n&quot;</span></span><br><span class="line">		<span class="string">&quot;   FragColor = vec4(fragColor.xyz, 1.0f);\n&quot;</span></span><br><span class="line">		<span class="string">&quot;&#125;\0&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> endregion</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">SetBufferObjects</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">CompileShader</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">Draw</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">Delete</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>cpp文件：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;TestRect.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">TestRect::SetBufferObjects</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">glGenVertexArrays</span>(<span class="number">1</span>, &amp;VAO);</span><br><span class="line">	<span class="built_in">glGenBuffers</span>(<span class="number">1</span>, &amp;VBO);</span><br><span class="line">	<span class="built_in">glGenBuffers</span>(<span class="number">1</span>, &amp;IBO);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">glBindVertexArray</span>(VAO);</span><br><span class="line">	<span class="comment">//Bind VBO</span></span><br><span class="line">	<span class="built_in">glBindBuffer</span>(GL_ARRAY_BUFFER,VBO);</span><br><span class="line">	<span class="built_in">glBufferData</span>(GL_ARRAY_BUFFER,<span class="built_in">sizeof</span>(vertices),vertices,GL_STATIC_DRAW);</span><br><span class="line">	<span class="comment">//Bind EBO</span></span><br><span class="line">	<span class="built_in">glBindBuffer</span>(GL_ELEMENT_ARRAY_BUFFER,IBO);</span><br><span class="line">	<span class="built_in">glBufferData</span>(GL_ELEMENT_ARRAY_BUFFER,<span class="built_in">sizeof</span>(indices), indices, GL_STATIC_DRAW);</span><br><span class="line">	<span class="comment">//Set VAO</span></span><br><span class="line">	<span class="comment">//Position</span></span><br><span class="line">	<span class="built_in">glVertexAttribPointer</span>(<span class="number">0</span>,<span class="number">3</span>,GL_FLOAT,GL_FALSE,<span class="number">6</span>*<span class="built_in">sizeof</span>(<span class="type">float</span>),(<span class="type">void</span>*)<span class="number">0</span>);</span><br><span class="line">	<span class="built_in">glEnableVertexAttribArray</span>(<span class="number">0</span>);</span><br><span class="line">	<span class="comment">//Vertex Color</span></span><br><span class="line">	<span class="built_in">glVertexAttribPointer</span>(<span class="number">1</span>, <span class="number">3</span>, GL_FLOAT, GL_FALSE, <span class="number">6</span> * <span class="built_in">sizeof</span>(<span class="type">float</span>), (<span class="type">void</span>*)(<span class="number">3</span>*<span class="built_in">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">	<span class="built_in">glEnableVertexAttribArray</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">glBindBuffer</span>(GL_ARRAY_BUFFER, <span class="number">0</span>);</span><br><span class="line">	<span class="built_in">glBindVertexArray</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">TestRect::CompileShader</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> vertexShader;</span><br><span class="line">	vertexShader = <span class="built_in">glCreateShader</span>(GL_VERTEX_SHADER);</span><br><span class="line">	<span class="built_in">glShaderSource</span>(vertexShader,<span class="number">1</span>,&amp;vertexShaderSource,<span class="literal">nullptr</span>);</span><br><span class="line">	<span class="built_in">glCompileShader</span>(vertexShader);</span><br><span class="line">	<span class="comment">// check for shader compile errors</span></span><br><span class="line">	<span class="type">int</span> success;</span><br><span class="line">	<span class="type">char</span> infoLog[<span class="number">512</span>];</span><br><span class="line">	<span class="built_in">glGetShaderiv</span>(vertexShader, GL_COMPILE_STATUS, &amp;success);</span><br><span class="line">	<span class="keyword">if</span> (!success)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">glGetShaderInfoLog</span>(vertexShader, <span class="number">512</span>, <span class="literal">NULL</span>, infoLog);</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;ERROR::SHADER::VERTEX::COMPILATION_FAILED\n&quot;</span> &lt;&lt; infoLog &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> fragmentShader;</span><br><span class="line">	fragmentShader = <span class="built_in">glCreateShader</span>(GL_FRAGMENT_SHADER);</span><br><span class="line">	<span class="built_in">glShaderSource</span>(fragmentShader, <span class="number">1</span>, &amp;fragmentShaderSource, <span class="literal">nullptr</span>);</span><br><span class="line">	<span class="built_in">glCompileShader</span>(fragmentShader);</span><br><span class="line">	<span class="built_in">glGetShaderiv</span>(fragmentShader, GL_COMPILE_STATUS, &amp;success);</span><br><span class="line">	<span class="keyword">if</span> (!success)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">glGetShaderInfoLog</span>(fragmentShader, <span class="number">512</span>, <span class="literal">NULL</span>, infoLog);</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n&quot;</span> &lt;&lt; infoLog &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	shaderProgram = <span class="built_in">glCreateProgram</span>();</span><br><span class="line">	<span class="built_in">glAttachShader</span>(shaderProgram,vertexShader);</span><br><span class="line">	<span class="built_in">glAttachShader</span>(shaderProgram, fragmentShader);</span><br><span class="line">	<span class="built_in">glLinkProgram</span>(shaderProgram);</span><br><span class="line">	<span class="built_in">glGetProgramiv</span>(shaderProgram, GL_LINK_STATUS, &amp;success);</span><br><span class="line">	<span class="keyword">if</span> (!success) &#123;</span><br><span class="line">		<span class="built_in">glGetProgramInfoLog</span>(shaderProgram, <span class="number">512</span>, <span class="literal">NULL</span>, infoLog);</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;ERROR::SHADER::PROGRAM::LINKING_FAILED\n&quot;</span> &lt;&lt; infoLog &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">glDeleteShader</span>(vertexShader);</span><br><span class="line">	<span class="built_in">glDeleteShader</span>(fragmentShader);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">TestRect::Draw</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">glUseProgram</span>(shaderProgram);</span><br><span class="line">	<span class="built_in">glBindVertexArray</span>(VAO);</span><br><span class="line">	<span class="built_in">glDrawElements</span>(GL_TRIANGLES,<span class="number">6</span>,GL_UNSIGNED_INT,<span class="number">0</span>);</span><br><span class="line">	<span class="comment">//glBindVertexArray(0);</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">TestRect::Delete</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">glDeleteVertexArrays</span>(<span class="number">1</span>, &amp;VAO);</span><br><span class="line">	<span class="built_in">glDeleteBuffers</span>(<span class="number">1</span>, &amp;VBO);</span><br><span class="line">	<span class="built_in">glDeleteBuffers</span>(<span class="number">1</span>, &amp;IBO);</span><br><span class="line">	<span class="built_in">glDeleteProgram</span>(shaderProgram);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://hexo.derekliu.cc">Dingxin Liu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://hexo.derekliu.cc/2025/02/13/OpenGL/OpenGL-02-VAO-VBO-IBO/">https://hexo.derekliu.cc/2025/02/13/OpenGL/OpenGL-02-VAO-VBO-IBO/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://hexo.derekliu.cc" target="_blank">Derek's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/">计算机图形学</a><a class="post-meta__tags" href="/tags/OpenGL/">OpenGL</a><a class="post-meta__tags" href="/tags/%E6%B8%B2%E6%9F%93%E5%BC%95%E6%93%8E/">渲染引擎</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2025/02/12/OKnx8JHqN92tWcb.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2025/02/12/OpenGL/OpenGL-01-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="OpenGL_01_环境配置"><img class="cover" src="https://s2.loli.net/2025/02/12/OKnx8JHqN92tWcb.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">OpenGL_01_环境配置</div></div></a></div><div class="next-post pull-right"><a href="/2025/02/15/OpenGL/OpenGL-03-Shader/" title="OpenGL-03-Shader"><img class="cover" src="https://s2.loli.net/2025/02/12/OKnx8JHqN92tWcb.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">OpenGL-03-Shader</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2025/02/15/OpenGL/OpenGL-03-Shader/" title="OpenGL-03-Shader"><img class="cover" src="https://s2.loli.net/2025/02/12/OKnx8JHqN92tWcb.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-15</div><div class="title">OpenGL-03-Shader</div></div></a></div><div><a href="/2025/02/12/OpenGL/OpenGL-01-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="OpenGL_01_环境配置"><img class="cover" src="https://s2.loli.net/2025/02/12/OKnx8JHqN92tWcb.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-12</div><div class="title">OpenGL_01_环境配置</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">VBO， Vertex Buffer Object 顶点缓冲对象</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#VBO%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">VBO的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8VBO"><span class="toc-number">1.2.</span> <span class="toc-text">使用VBO</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAVBO"><span class="toc-number">1.2.1.</span> <span class="toc-text">创建VBO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9AVBO"><span class="toc-number">1.2.2.</span> <span class="toc-text">绑定VBO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%91VBO%E4%B8%AD%E5%A1%AB%E5%85%85%E6%95%B0%E6%8D%AE"><span class="toc-number">1.2.3.</span> <span class="toc-text">向VBO中填充数据</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">VAO， Vertex Array Object 顶点数组对象</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#VAO%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">2.1.</span> <span class="toc-text">VAO的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8VAO"><span class="toc-number">2.2.</span> <span class="toc-text">使用VAO</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E8%A7%A3%E9%93%BE%E6%8E%A5%E9%A1%B6%E7%82%B9%E5%B1%9E%E6%80%A7"><span class="toc-number">2.2.1.</span> <span class="toc-text">理解链接顶点属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAVAO"><span class="toc-number">2.2.2.</span> <span class="toc-text">创建VAO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9AVAO"><span class="toc-number">2.2.3.</span> <span class="toc-text">绑定VAO</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">IBO， Index Buffer Object 索引缓冲对象（EBO， Element Buffer Object， 元素缓冲对象）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#IBO%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">3.1.</span> <span class="toc-text">IBO的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IBO%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">3.2.</span> <span class="toc-text">IBO的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAIBO"><span class="toc-number">3.2.1.</span> <span class="toc-text">创建IBO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9AIBO"><span class="toc-number">3.2.2.</span> <span class="toc-text">绑定IBO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86IBO%E7%BB%91%E5%AE%9A%E5%88%B0VAO"><span class="toc-number">3.2.3.</span> <span class="toc-text">将IBO绑定到VAO</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">测试</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background-image: url('https://s2.loli.net/2025/02/12/OKnx8JHqN92tWcb.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Dingxin Liu</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div class="docsearch-wrap"><div id="docsearch" style="display:none"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3.5.2/dist/style.min.css"/><script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3.5.2/dist/umd/index.min.js"></script><script>(() => {
+  docsearch(Object.assign({
+    appId: '',
+    apiKey: '',
+    indexName: '',
+    container: '#docsearch',
+  }, null))
+
+  const handleClick = () => {
+    document.querySelector('.DocSearch-Button').click()
+  }
+
+  const searchClickFn = () => {
+    btf.addEventListenerPjax(document.querySelector('#search-button > .search'), 'click', handleClick)
+  }
+
+  searchClickFn()
+  window.addEventListener('pjax:complete', searchClickFn)
+})()</script></div></div></body></html>
