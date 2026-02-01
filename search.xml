@@ -5,10 +5,10 @@
     
     <entry>
       <title>MIT08</title>
-      <link href="/2026/01/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/MIT_6S081_L1/"/>
-      <url>/2026/01/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/MIT_6S081_L1/</url>
+      <link href="/2026/01/31/MIT_6S081_L1/"/>
+      <url>/2026/01/31/MIT_6S081_L1/</url>
       
-        <content type="html"><![CDATA[<h1>计算机结构</h1><p>为了更好地理解OS，这里将计算机组成放到这里。<br><img src="/2026/01/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/MIT_6S081_L1/ComputerConstruction.jpg" alt="&quot;计算机结构&quot;" title="计算机结构简图"></p><p>CPU有不同字长区分，CPU字长指整数和指针数据的标称大小。早期PC机性能较差，多为32位计算机。现多为64位计算机。<br>通过指针字节长度可以算出虚拟地址最大存储空间（即指针排列情况），32位计算机只有2^32存储空间,64位计算机有2^64的存储空间。<br>但只是虚拟地址，实际物理地址可能并没有这么大空间。</p><p>应用程序也不会直接调用硬件级别的命令，而是使用OS级别的命令，通过OS调用硬件命令。<br>这是为了实现OS系统的特性：</p><ul><li>isolation 隔离性：将软件和物理内存分分隔，保证进程Crush不会导致整个OS崩溃。</li><li>multiplexing 多进程同时操作：将软件和物理内存分分隔，保证进程间互不影响。</li><li>interaction 交互性：提供统一的硬件调用方法。</li></ul><h1>页表</h1><p>通过页表实现了虚拟地址到物理地址的映射。<br><img src="/2026/01/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/MIT_6S081_L1/VASpace.jpg" alt="&quot;虚拟地址&quot;" title="虚拟地址结构布局"><br>在虚拟地址中，堆从下往上增长，栈从上往下增长。<br>.text是代码区，放的是编译好的代码。<br>data区域是全局变量和静态变量。</p><p>虚拟地址还需要在CPU中翻译为物理地址。负责计算物理地址的叫memory management unit（mmu）。<br>在RISC-V操作系统中，地址后12位为offset，前面为<strong>物理页表的页号</strong>。页表中记录PPN（Physical Page Number）和flag（记录地址状态，如valid等）<br><img src="/2026/01/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/MIT_6S081_L1/mmu.jpg" alt="&quot;虚拟地址To物理地址&quot;" title="虚拟地址To物理地址"></p><h2 id="分级页表">分级页表</h2><p>但前面提到虚拟地址可能要比物理地址大（可以等于，也可以小于，但一般VA大于PA），是因为在VA映射到PA时PPN可能是无效的，即没有实际对应的物理内存，就会及时开辟一个新的页表让该地址对应到物理地址。而如图一张页表，字节数也较大，为了一个地址申请一个新表可能会很耗时，遂考虑解决方法。<br>考虑将页表分级。</p><p><img src="/2026/01/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/MIT_6S081_L1/VALevel.jpg" alt="&quot;分级页表&quot;" title="分级页表"></p><h2 id="快表TLB">快表TLB</h2><p>实际上mmu映射到PA也是个复杂的过程，为了快速访问，会将最近使用的VA和PA映射关系存到一个缓存表中，名为快表TLB</p><ul><li>总结：因此，软件进程中访问一个虚拟地址，流程是：查TLB —》无结果则mmu映射到物理地址 —》多级缓存机制加速地址访问过程…</li></ul><h1>Calling Convention &amp; Stack Frames</h1><ul><li><strong>Review</strong>：<br>C/C++代码需要编译为二进制代码。<br>编译过程如下：<br><img src="/2026/01/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/MIT_6S081_L1/ComplieProcess.jpg" alt="&quot;编译过程&quot;" title="编译过程"></li></ul><h2 id="Stack-Frames-Calling-Convention">Stack Frames &amp;&amp; Calling Convention</h2><p>编译后的代码会存储在.text代码段，调用函数即使用函数第一行的地址，如下：<br><img src="/2026/01/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/MIT_6S081_L1/FunctionCall.jpg" alt="&quot;FunctionCall&quot;" title="FunctionCall"></p><p>函数嵌套调用时会先移动sp指针，包含调用函数中创建的临时变量、前一帧的地址、函数返回地址等， 调用结束后返回fp指针（返回地址），sp向后移动。<br>sp指向栈“顶”，fp指向当前的栈帧首地址。<br><img src="/2026/01/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/MIT_6S081_L1/StackFrame.jpg" alt="&quot;StackFrame&quot;" title="StackFrame"></p><p>寄存器对编译的函数有统一的限制，如寄存器a0~a1仅用于存储函数参数或返回值。这里不做深入讨论。<br>仅补上下面概念：<br>Caller —— 返回一个调用当前函数的引用<br>Callee —— 返回一个正在被执行函数的引用</p><h1>trap</h1><h1>Page Faults</h1><h1>总结 Conclusion</h1>]]></content>
+        <content type="html"><![CDATA[<h1>计算机结构</h1><p>为了更好地理解OS，这里将计算机组成放到这里。<br><img src="/2026/01/31/MIT_6S081_L1/ComputerConstruction.jpg" alt="&quot;计算机结构&quot;" title="计算机结构简图"></p><p>CPU有不同字长区分，CPU字长指整数和指针数据的标称大小。早期PC机性能较差，多为32位计算机。现多为64位计算机。<br>通过指针字节长度可以算出虚拟地址最大存储空间（即指针排列情况），32位计算机只有2^32存储空间,64位计算机有2^64的存储空间。<br>但只是虚拟地址，实际物理地址可能并没有这么大空间。</p><p>应用程序也不会直接调用硬件级别的命令，而是使用OS级别的命令，通过OS调用硬件命令。<br>这是为了实现OS系统的特性：</p><ul><li>isolation 隔离性：将软件和物理内存分分隔，保证进程Crush不会导致整个OS崩溃。</li><li>multiplexing 多进程同时操作：将软件和物理内存分分隔，保证进程间互不影响。</li><li>interaction 交互性：提供统一的硬件调用方法。</li></ul><h1>页表</h1><p>通过页表实现了虚拟地址到物理地址的映射。<br><img src="/2026/01/31/MIT_6S081_L1/VASpace.jpg" alt="&quot;虚拟地址&quot;" title="虚拟地址结构布局"><br>在虚拟地址中，堆从下往上增长，栈从上往下增长。<br>.text是代码区，放的是编译好的代码。<br>data区域是全局变量和静态变量。</p><p>虚拟地址还需要在CPU中翻译为物理地址。负责计算物理地址的叫memory management unit（mmu）。<br>在RISC-V操作系统中，地址后12位为offset，前面为<strong>物理页表的页号</strong>。页表中记录PPN（Physical Page Number）和flag（记录地址状态，如valid等）<br><img src="/2026/01/31/MIT_6S081_L1/mmu.jpg" alt="&quot;虚拟地址To物理地址&quot;" title="虚拟地址To物理地址"></p><h2 id="分级页表">分级页表</h2><p>但前面提到虚拟地址可能要比物理地址大（可以等于，也可以小于，但一般VA大于PA），是因为在VA映射到PA时PPN可能是无效的，即没有实际对应的物理内存，就会及时开辟一个新的页表让该地址对应到物理地址。而如图一张页表，字节数也较大，为了一个地址申请一个新表可能会很耗时，遂考虑解决方法。<br>考虑将页表分级。</p><p><img src="/2026/01/31/MIT_6S081_L1/VALevel.jpg" alt="&quot;分级页表&quot;" title="分级页表"></p><h2 id="快表TLB">快表TLB</h2><p>实际上mmu映射到PA也是个复杂的过程，为了快速访问，会将最近使用的VA和PA映射关系存到一个缓存表中，名为快表TLB</p><ul><li>总结：因此，软件进程中访问一个虚拟地址，流程是：查TLB —》无结果则mmu映射到物理地址 —》多级缓存机制加速地址访问过程…</li></ul><h1>Calling Convention &amp; Stack Frames</h1><ul><li><strong>Review</strong>：<br>C/C++代码需要编译为二进制代码。<br>编译过程如下：<br><img src="/2026/01/31/MIT_6S081_L1/ComplieProcess.jpg" alt="&quot;编译过程&quot;" title="编译过程"></li></ul><h2 id="Stack-Frames-Calling-Convention">Stack Frames &amp;&amp; Calling Convention</h2><p>编译后的代码会存储在.text代码段，调用函数即使用函数第一行的地址，如下：<br><img src="/2026/01/31/MIT_6S081_L1/FunctionCall.jpg" alt="&quot;FunctionCall&quot;" title="FunctionCall"></p><p>函数嵌套调用时会先移动sp指针，包含调用函数中创建的临时变量、前一帧的地址、函数返回地址等， 调用结束后返回fp指针（返回地址），sp向后移动。<br>sp指向栈“顶”，fp指向当前的栈帧首地址。<br><img src="/2026/01/31/MIT_6S081_L1/StackFrame.jpg" alt="&quot;StackFrame&quot;" title="StackFrame"></p><p>寄存器对编译的函数有统一的限制，如寄存器a0~a1仅用于存储函数参数或返回值。这里不做深入讨论。<br>仅补上下面概念：<br>Caller —— 返回一个调用当前函数的引用<br>Callee —— 返回一个正在被执行函数的引用</p><h1>trap</h1><h1>Page Faults</h1><h1>总结 Conclusion</h1>]]></content>
       
       
       <categories>
@@ -300,9 +300,9 @@
       
         <tags>
             
-            <tag> 算法 </tag>
-            
             <tag> 算法导论 </tag>
+            
+            <tag> 算法 </tag>
             
             <tag> 排序 </tag>
             
@@ -358,9 +358,9 @@
       
         <tags>
             
-            <tag> 力扣代码随想录 </tag>
-            
             <tag> 算法 </tag>
+            
+            <tag> 力扣代码随想录 </tag>
             
             <tag> 回溯算法 </tag>
             
@@ -441,9 +441,9 @@
       
         <tags>
             
-            <tag> 力扣代码随想录 </tag>
-            
             <tag> 算法 </tag>
+            
+            <tag> 力扣代码随想录 </tag>
             
             <tag> 二叉树 </tag>
             
@@ -470,9 +470,9 @@
       
         <tags>
             
-            <tag> 力扣代码随想录 </tag>
-            
             <tag> 算法 </tag>
+            
+            <tag> 力扣代码随想录 </tag>
             
             <tag> 哈希表 </tag>
             
@@ -541,9 +541,9 @@
       
         <tags>
             
-            <tag> 力扣代码随想录 </tag>
-            
             <tag> 算法 </tag>
+            
+            <tag> 力扣代码随想录 </tag>
             
             <tag> 链表 </tag>
             
@@ -570,9 +570,9 @@
       
         <tags>
             
-            <tag> 力扣代码随想录 </tag>
-            
             <tag> 算法 </tag>
+            
+            <tag> 力扣代码随想录 </tag>
             
             <tag> 数组 </tag>
             
